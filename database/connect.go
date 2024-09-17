@@ -1,35 +1,23 @@
 package database
 
 import (
+	"fmt"
+	"github.com/Achariya1/go-books-crud/model"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
-	"fmt"
 	"log"
 	"os"
 	"time"
-	"github.com/Achariya1/go-books-crud/model"
-
 )
-
-const (
-		host     = "localhost"  // or the Docker service name if running in another container
-		port     = 5432         // default PostgreSQL port
-		user     = "myuser"     // as defined in docker-compose.yml
-		password = "mypassword" // as defined in docker-compose.yml
-		dbname   = "mydatabase" // as defined in docker-compose.yml
-)
-
 
 func ConnetDB() {
 	var err error // define error here to prevent overshadowing the global DB
 
-
-	dsn := fmt.Sprintf("host=%s port=%d user=%s "+
-		"password=%s dbname=%s sslmode=disable",
-		host, port, user, password, dbname)
 	
-	
+	// Connection string using environment variables
+	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+	os.Getenv("DB_HOST"), os.Getenv("DB_PORT"), os.Getenv("DB_USER"), os.Getenv("DB_PASSWORD"), os.Getenv("DB_NAME"))
 
 	newLogger := logger.New(
 		log.New(os.Stdout, "\r\n", log.LstdFlags), // io writer
@@ -46,8 +34,7 @@ func ConnetDB() {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
-	DB.AutoMigrate(&model.Book{},&model.User{})
+	DB.AutoMigrate(&model.Book{}, &model.User{}, &model.Author{})
 	print("Conneting database Successfull")
-	
 
 }
